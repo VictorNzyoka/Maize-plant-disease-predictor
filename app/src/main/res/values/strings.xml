@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Maize Plant Disease Detection</string>
+    <string name="blight">MANCO-FLO® 455SC </string>
+    <string name="common_rust">Amistartop Sc</string>
+    <string name="gray_leaf_spot">Amistartop SC</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="back_button_desc">Navigate back</string>
+    <string name="logout_button_desc">Log out of the application</string>
+    <string name="mancoflo_esc"> A convenient liquid fungicide suspension containing mancozeb as an active ingredient,suitable for various crops, and available in different pack sizes for easy application.</string>
+    <string name="amistartop">A Fungicide for the control of Grey Leaf Spot, Leaf Blight and Common Rust in Maize.</string>
+    <string name="nav_about_description">
+        The Maize Plant Disease Detection App is designed to help farmers and agricultural professionals identify common diseases in maize plants. By simply capturing or uploading an image of a maize leaf, the app uses advanced machine learning algorithms to analyze the image and provide accurate disease detection results. The app supports the identification of diseases such as Blight, Common Rust, and Gray Leaf Spot. With this app, users can quickly diagnose maize plant diseases and take appropriate measures to prevent the spread of the disease and protect their crops.
+    </string>
+</resources>

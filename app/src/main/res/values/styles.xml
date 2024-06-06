@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<style name="CustomTheme" parent="Theme.MaizeDisease">
+    <!-- Customize other theme attributes as needed -->
+    <item name="android:statusBarColor">@color/lightgreen</item>
+</style>
+</resources>
