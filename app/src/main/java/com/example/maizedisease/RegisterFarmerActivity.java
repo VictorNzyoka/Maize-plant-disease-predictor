@@ -119,7 +119,7 @@ public class RegisterFarmerActivity extends AppCompatActivity {
                         Toast.makeText(RegisterFarmerActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
 
                         // Store farmer data in Firebase Realtime Database
-                        FarmerModel farmerModel = new FarmerModel(userId, email,username, phoneNumber, farmerLocation, userType);
+                        UserModel farmerModel = new UserModel(userId, email, username, phoneNumber, farmerLocation, userType);
                         storeUserData(farmerModel);
                     } else {
                         // User registration failed
@@ -128,7 +128,7 @@ public class RegisterFarmerActivity extends AppCompatActivity {
                 });
     }
 
-    private void storeUserData(FarmerModel userModel) {
+    private void storeUserData(UserModel userModel) {
         String userId = userModel.getUserId();
         usersRef.child(userId).setValue(userModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

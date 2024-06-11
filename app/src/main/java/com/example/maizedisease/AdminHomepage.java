@@ -29,18 +29,7 @@ public class AdminHomepage extends AppCompatActivity {
 
         RegisterFarmer.setOnClickListener(v ->RegisterFarmers());
         RegisterOfficer.setOnClickListener(v ->RegisterOfficers());
-        backButton.setOnClickListener(v ->onBack());
-        logoutButton.setOnClickListener(v ->logout());
 
-    }
-
-    private void logout() {
-        Intent intent = new Intent(AdminHomepage.this, AdminLogin.class);
-        startActivity(intent);
-    }
-    public void onBack() {
-        Intent intent = new Intent(AdminHomepage.this, AdminLogin.class);
-        startActivity(intent);
     }
 
     private void RegisterOfficers() {

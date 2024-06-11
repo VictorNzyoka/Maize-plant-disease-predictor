@@ -1,102 +1,149 @@
 package com.example.maizedisease;
 
-import android.content.Context;
+import android.view.Gravity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.example.maizedisease.R;
+import com.example.maizedisease.MessageModel;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {
-    private Context context;
-    private List<MessageModel> messageModelList;
-    private static final int MESSAGE_TYPE_SENT = 1;
-    private static final int MESSAGE_TYPE_RECEIVED = 2;
-    private String currentUserUserId;
-    private int spacing = 16;
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    public MessageAdapter(Context context, String currentUserUserId) {
-        this.context = context;
-        this.currentUserUserId = currentUserUserId;
-        this.messageModelList = new ArrayList<>();
+    private static List<MessageModel> messageList;
+    private FirebaseUser currentUser;
+    private OnSelectionChangeListener selectionChangeListener;
+
+    public MessageAdapter(List<MessageModel> messageList, FirebaseUser currentUser) {
+        this.messageList = messageList;
+        this.currentUser = currentUser;
     }
 
-    public void add(MessageModel messageModel) {
-        messageModelList.add(messageModel);
-        notifyDataSetChanged();
+    public void setOnSelectionChangeListener(OnSelectionChangeListener listener) {
+        this.selectionChangeListener = listener;
     }
 
-    public void clear() {
-        messageModelList.clear();
-        notifyDataSetChanged();
+    public interface OnSelectionChangeListener {
+        void onSelectionChanged(boolean hasSelectedMessages);
+    }
+
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
+        private TextView textViewMessage, textName, textTimestamp;
+        private LinearLayout chatHolderLayout, messageHolderLayout;
+        private ImageButton btndeleteChat;
+        private MessageAdapter messageAdapter;
+
+        public MessageViewHolder(@NonNull View itemView, MessageAdapter messageAdapter) {
+            super(itemView);
+            this.messageAdapter = messageAdapter;
+            textViewMessage = itemView.findViewById(R.id.message);
+            textName = itemView.findViewById(R.id.name);
+            textTimestamp = itemView.findViewById(R.id.timestamp);
+            chatHolderLayout = itemView.findViewById(R.id.LLChatHolder);
+            messageHolderLayout = itemView.findViewById(R.id.LLMessageHolder);
+            btndeleteChat = itemView.findViewById(R.id.btnDelChat);
+
+            chatHolderLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int position = getAdapterPosition();
+                    MessageModel message = messageList.get(position);
+                    message.setSelected(!message.isSelected());
+                    chatHolderLayout.setBackgroundColor(message.isSelected() ?
+                            itemView.getResources().getColor(android.R.color.holo_red_dark) :
+                            itemView.getResources().getColor(android.R.color.transparent));
+                    messageHolderLayout.setBackgroundColor(itemView.getResources().getColor(android.R.color.holo_red_dark));
+
+                    // Notify adapter's listener about selection change
+                    if (messageAdapter.selectionChangeListener != null) {
+                        boolean hasSelectedMessages = false;
+                        for (MessageModel msg : messageList) {
+                            if (msg.isSelected()) {
+                                hasSelectedMessages = true;
+                                break;
+                            }
+                        }
+                        messageAdapter.selectionChangeListener.onSelectionChanged(hasSelectedMessages);
+                    }
+
+                    return true; // consume the long click
+                }
+            });
+
+            btndeleteChat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    messageAdapter.deleteSelectedMessages();
+                }
+            });
+        }
+
+        public void bind(MessageModel message, FirebaseUser currentUser) {
+            textViewMessage.setText(message.getMessage());
+            textTimestamp.setText(message.getTimestamp());
+
+            if (currentUser != null && currentUser.getEmail().replace(".", "_").equals(message.getSender())) {
+                textName.setText("You");
+                messageHolderLayout.setBackgroundResource(R.drawable.sender_background);
+                chatHolderLayout.setGravity(Gravity.END);
+            } else {
+                textName.setText(message.getRecipientname());
+                messageHolderLayout.setBackgroundResource(R.drawable.receiver_background);
+                chatHolderLayout.setGravity(Gravity.START);
+            }
+
+            chatHolderLayout.setBackgroundColor(message.isSelected() ?
+                    itemView.getResources().getColor(android.R.color.holo_red_dark) :
+                    itemView.getResources().getColor(android.R.color.transparent));
+        }
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        if (viewType == MESSAGE_TYPE_SENT) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sender_row, parent, false);
-        } else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.receiver_row, parent, false);
-        }
-        return new MyViewHolder(view, viewType);
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
+        return new MessageViewHolder(view, this);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        MessageModel messageModel = messageModelList.get(position);
-        holder.messageTextView.setText(messageModel.getMessage());
+    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        MessageModel message = messageList.get(position);
+        holder.bind(message, currentUser);
+    }
 
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.messageTextView.getLayoutParams();
-        if (messageModel.getSenderId() != null && messageModel.getSenderId().equals(currentUserUserId)) {
-            // Sender's message
-            holder.messageTextView.setBackgroundResource(R.drawable.sender_background);
-            params.gravity = Gravity.END;
-        } else {
-            // Receiver's message
-            holder.messageTextView.setBackgroundResource(R.drawable.receiver_background);
-            params.gravity = Gravity.START;
+    public void deleteSelectedMessages() {
+        for (int i = messageList.size() - 1; i >= 0; i--) {
+            if (messageList.get(i).isSelected()) {
+                messageList.remove(i);
+            }
         }
-        holder.messageTextView.setLayoutParams(params);
+        notifyDataSetChanged();
+
+        // Notify listener about selection change after deletion
+        if (selectionChangeListener != null) {
+            boolean hasSelectedMessages = false;
+            for (MessageModel message : messageList) {
+                if (message.isSelected()) {
+                    hasSelectedMessages = true;
+                    break;
+                }
+            }
+            selectionChangeListener.onSelectionChanged(hasSelectedMessages);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return messageModelList.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        MessageModel message = messageModelList.get(position);
-        if (message.getSenderId() != null && message.getSenderId().equals(currentUserUserId)) {
-            return MESSAGE_TYPE_SENT;
-        } else {
-            return MESSAGE_TYPE_RECEIVED;
-        }
-    }
-
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextView;
-
-        public MyViewHolder(@NonNull View itemView, int viewType) {
-            super(itemView);
-            messageTextView = itemView.findViewById(R.id.message);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(spacing, spacing, spacing, spacing);
-            if (viewType == MESSAGE_TYPE_SENT) {
-                params.gravity = Gravity.END;
-            } else {
-                params.gravity = Gravity.START;
-            }
-            itemView.setLayoutParams(params);
-        }
+        return messageList.size();
     }
 }

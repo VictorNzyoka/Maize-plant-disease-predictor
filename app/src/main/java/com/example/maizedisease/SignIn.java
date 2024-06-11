@@ -58,21 +58,28 @@ public class SignIn extends AppCompatActivity {
             return;
         }
 
-        // Sign in the user with email and password
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // User signed in successfully
-                        String userId = task.getResult().getUser().getUid();
+        // Check if the entered email and password match the admin credentials
+        if (email.equals("admin18@gmail.com") && password.equals("victor123")) {
+            // Redirect to the RegisterPage class
+            Intent intent = new Intent(SignIn.this, AdminHomepage.class);
+            startActivity(intent);
+        } else {
+            // Sign in the user with email and password
+            firebaseAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            // User signed in successfully
+                            String userId = task.getResult().getUser().getUid();
 
-                        // Check if the user is a farmer or an officer
-                        checkUserType(userId);
-                    } else {
-                        // Sign-in failed
-                        Toast.makeText(SignIn.this, "Sign-in failed: " + task.getException().getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                            // Check if the user is a farmer or an officer
+                            checkUserType(userId);
+                        } else {
+                            // Sign-in failed
+                            Toast.makeText(SignIn.this, "Sign-in failed: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     private void checkUserType(String userId) {
@@ -129,7 +136,7 @@ public class SignIn extends AppCompatActivity {
         if (userType.equals("farmer")) {
             intent = new Intent(SignIn.this, MainActivity.class);
         } else if (userType.equals("officer")) {
-            intent = new Intent(SignIn.this, MessageActivity.class);
+            intent = new Intent(SignIn.this, DisplayUsers.class);
         } else {
             Toast.makeText(SignIn.this, "Invalid user type", Toast.LENGTH_SHORT).show();
             return;

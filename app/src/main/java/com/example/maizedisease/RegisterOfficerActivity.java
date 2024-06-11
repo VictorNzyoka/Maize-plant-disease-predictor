@@ -23,7 +23,7 @@ public class RegisterOfficerActivity extends AppCompatActivity {
     private static final String TAG = "RegisterOfficerActivity";
     private static final String USER_TYPE = "officer";
 
-    private EditText emailEditText, usernameEditText, phoneNumberEditText, officerLocationEditText, experienceEditText, passwordEditText;
+    private EditText emailEditText, usernameEditText, phoneNumberEditText, officerLocationEditText, passwordEditText;
     private Button submitButton;
 
     private FirebaseAuth firebaseAuth;
@@ -45,7 +45,6 @@ public class RegisterOfficerActivity extends AppCompatActivity {
         usernameEditText = findViewById(R.id.username);
         phoneNumberEditText = findViewById(R.id.phone_number);
         officerLocationEditText = findViewById(R.id.officerLocation);
-        experienceEditText = findViewById(R.id.experience);
         passwordEditText = findViewById(R.id.password);
         submitButton = findViewById(R.id.submit);
 
@@ -65,7 +64,6 @@ public class RegisterOfficerActivity extends AppCompatActivity {
         String username = usernameEditText.getText().toString().trim();
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
         String officerLocation = officerLocationEditText.getText().toString().trim();
-        String experience = experienceEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
         // Validate email format
@@ -82,7 +80,7 @@ public class RegisterOfficerActivity extends AppCompatActivity {
             return false;
         }
 
-        // Validate username, phone number, location, and experience
+        // Validate username, phone number, and location
         if (TextUtils.isEmpty(username)) {
             usernameEditText.setError("Username is required");
             usernameEditText.requestFocus();
@@ -101,12 +99,6 @@ public class RegisterOfficerActivity extends AppCompatActivity {
             return false;
         }
 
-        if (TextUtils.isEmpty(experience)) {
-            experienceEditText.setError("Experience is required");
-            experienceEditText.requestFocus();
-            return false;
-        }
-
         return true;
     }
 
@@ -115,7 +107,6 @@ public class RegisterOfficerActivity extends AppCompatActivity {
         String username = usernameEditText.getText().toString().trim();
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
         String officerLocation = officerLocationEditText.getText().toString().trim();
-        int experience = Integer.parseInt(experienceEditText.getText().toString().trim());
         String password = passwordEditText.getText().toString().trim();
 
         // Create user account in Firebase Authentication
@@ -128,7 +119,7 @@ public class RegisterOfficerActivity extends AppCompatActivity {
                         Toast.makeText(RegisterOfficerActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
 
                         // Store officer data in Firebase Realtime Database
-                        OfficerModel officerModel = new OfficerModel(userId, username, email, phoneNumber, officerLocation, experience, userType);
+                        UserModel officerModel = new UserModel(userId, email, username, phoneNumber, officerLocation, userType);
                         storeUserData(officerModel);
                     } else {
                         // User registration failed
@@ -137,7 +128,7 @@ public class RegisterOfficerActivity extends AppCompatActivity {
                 });
     }
 
-    private void storeUserData(OfficerModel officerModel) {
+    private void storeUserData(UserModel officerModel) {
         String userId = officerModel.getUserId();
         usersRef.child(userId).setValue(officerModel).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

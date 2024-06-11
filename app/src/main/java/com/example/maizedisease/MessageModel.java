@@ -1,40 +1,69 @@
 package com.example.maizedisease;
 
 public class MessageModel {
-    private String msgid;
-    private String senderId;
-    private String message;
+        public void setRecipientname(String recipientname) {
+            this.recipientname = recipientname;
+        }
 
-    public MessageModel(String msgid, String senderId, String message) {
-        this.msgid = msgid;
-        this.senderId = senderId;
-        this.message = message;
-    }
+        public String getTimestamp() {
+            return timestamp;
+        }
 
-    public MessageModel() {
-    }
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
 
-    public String getMsgid() {
-        return msgid;
-    }
+        private String message;
 
-    public void setMsgid(String msgid) {
-        this.msgid = msgid;
-    }
+        private String name;
+        private String sender;
+        private String recipientname;
+        private String timestamp;  // Added timestamp field
+        private boolean selected;
+        public MessageModel() {
+            // Default constructor required for Firebase
+        }
 
-    public String getSenderId() {
-        return senderId;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public void setSenderId(String senderId) {
-        this.senderId = senderId;
-    }
+        public void setName(String name) {
+            this.name = name;
+        }
 
-    public String getMessage() {
-        return message;
-    }
+        public MessageModel(String message, String sender, String recipientname, String timestamp, String name) {
+            this.message = message;
+            this.sender = sender;
+            this.recipientname = recipientname;
+            this.timestamp = timestamp;
+            this.name= name;
+        }
+        public String getMessage() {
+            return message;
+        }
 
-    public void setMessage(String message) {
-        this.message = message;
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getSender() {
+            return sender;
+        }
+
+        public void setSender(String sender) {
+            this.sender = sender;
+        }
+
+        public String getRecipientname() {
+            return recipientname;
+        }
+
+        public  boolean isSelected(){
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
     }
-}

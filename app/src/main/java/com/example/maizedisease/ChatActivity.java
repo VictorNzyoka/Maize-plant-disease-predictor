@@ -1,124 +1,154 @@
 package com.example.maizedisease;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.maizedisease.databinding.ActivityChatBinding;
+import com.example.maizedisease.MessageAdapter;
+import com.example.maizedisease.MessageModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
-    private static final String TAG = "ChatActivity";
-    private ActivityChatBinding binding;
-    private ImageView backButton, logoutButton;
-    private String receiverUserId;
-    private DatabaseReference databaseReferenceSender, databaseReferenceReceiver;
-    private String senderRoom, receiverRoom;
+
+    private EditText editTextMessage;
+    private ImageButton buttonSend;
+    private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
-    private FirebaseUser currentUser;
-    private String currentUserUserId;
+    private FirebaseAuth mAuth;
+    private List<MessageModel> messageList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityChatBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_chat);
 
-        backButton = findViewById(R.id.back_button);
-        logoutButton = findViewById(R.id.logout_button);
+        editTextMessage = findViewById(R.id.chatEditText);
+        buttonSend = findViewById(R.id.send);
+        recyclerView = findViewById(R.id.recyclerView);
 
-        backButton.setOnClickListener(v ->onBack());
-        logoutButton.setOnClickListener(v ->logout());
+        mAuth = FirebaseAuth.getInstance();
 
-        // Get the receiver's userId from the intent
-        receiverUserId = getIntent().getStringExtra("userId");
+        // Initialize the MessageAdapter with the messageList
+        messageAdapter = new MessageAdapter(messageList, mAuth.getCurrentUser());
 
-        // Get the current user
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        currentUserUserId = currentUser.getUid();
+        // Set up the RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(messageAdapter);
 
-        // Generate the sender and receiver room names
-        senderRoom = currentUserUserId + receiverUserId; // Use userId instead of username
-        receiverRoom = receiverUserId + currentUserUserId; // Use userId instead of username
+        buttonSend.setOnClickListener(view -> sendMessageToConversation());
 
-        // Initialize the message adapter and recycler view
-        messageAdapter = new MessageAdapter(this, currentUserUserId); // Use userId instead of username
-        binding.recycler.setAdapter(messageAdapter);
-        binding.recycler.setLayoutManager(new LinearLayoutManager(this));
-
-        // Initialize the database references
-        databaseReferenceSender = FirebaseDatabase.getInstance().getReference("chats").child(senderRoom);
-        databaseReferenceReceiver = FirebaseDatabase.getInstance().getReference("chats").child(receiverRoom);
-
-        // Add a value event listener to the sender's chat room
-        databaseReferenceSender.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                messageAdapter.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    MessageModel messageModel = dataSnapshot.getValue(MessageModel.class);
-                    messageAdapter.add(messageModel);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle error
-                Log.e(TAG, "DatabaseError: " + error.getMessage());
-            }
-        });
-
-        // Set a click listener on the send message button
-        binding.sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = binding.messageEd.getText().toString().trim();
-                if (!message.isEmpty()) {
-                    sendMessage(message, currentUserUserId, receiverUserId); // Use userId instead of username
-                    binding.messageEd.setText(""); // Clear the input field after sending the message
-                }
-            }
-        });
+        loadConversationMessages();
     }
 
-    private void sendMessage(String message, String senderUserId, String receiverUserId) {
-        if (senderUserId != null && !senderUserId.isEmpty()) {
-            String messageId = UUID.randomUUID().toString();
-            MessageModel messageModel = new MessageModel(messageId, senderUserId, message);
+    private void loadConversationMessages() {
+        DatabaseReference conversationsRef = FirebaseDatabase.getInstance().getReference("conversations");
+        String recipientEmail= getIntent().getStringExtra("recipientEmail").replace(".", "_");;
 
-            // Add the message to the adapter
-            messageAdapter.add(messageModel);
+        String currentUserEmail = mAuth.getCurrentUser().getEmail().replace(".", "_");
 
-            // Save the message to the sender's and receiver's chat rooms
-            databaseReferenceSender.child(messageId).setValue(messageModel);
-            databaseReferenceReceiver.child(messageId).setValue(messageModel);
-        } else {
-            // Handle the case where the senderUserId is not available
-            Log.e(TAG, "senderUserId is not available");
-            // You can show an error message to the user or take other appropriate actions
-        }
+
+        // Ensure consistent order for conversationId
+        String conversationId = currentUserEmail.compareTo(recipientEmail) < 0 ?
+                currentUserEmail + "_" + recipientEmail : recipientEmail + "_" + currentUserEmail;
+
+        conversationsRef.child(conversationId).child("messages")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        messageList.clear(); // Clear existing messages
+                        for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                            MessageModel message = messageSnapshot.getValue(MessageModel.class);
+                            if (message != null) {
+                                messageList.add(message);
+                            }
+                        }
+                        messageAdapter.notifyDataSetChanged(); // Notify adapter of data change
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("ChatApp", "Failed to retrieve messages: " + databaseError.getMessage());
+                    }
+                });
     }
-    private void logout() {
-        Intent intent = new Intent(ChatActivity.this, SignIn.class);
-        startActivity(intent);
-    }
-    public void onBack() {
-        Intent intent = new Intent(ChatActivity.this, MessageActivity.class);
-        startActivity(intent);
+
+    private void sendMessageToConversation() {
+        Log.d("ChatApp", "sendMessageToConversation: Method called");
+
+        // Show a toast message indicating that the method is being called
+        Toast.makeText(getApplicationContext(), "sendMessageToConversation method called", Toast.LENGTH_SHORT).show();
+
+        DatabaseReference conversationsRef = FirebaseDatabase.getInstance().getReference("conversations");
+        DatabaseReference contactRef = FirebaseDatabase.getInstance().getReference("users");
+
+        String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Retrieve sender name from the database
+        contactRef.child(currentUserUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String senderName = snapshot.child("name").getValue(String.class);
+
+                            // Log sender name
+                            Log.d("ChatApp", "Sender name: " + senderName);
+
+                            String recipientEmail = getIntent().getStringExtra("recipientEmail").replace(".", "_");
+                            String currentUserEmail = mAuth.getCurrentUser().getEmail().replace(".", "_");
+
+                            // Ensure consistent order for conversationId
+                            String conversationId = currentUserEmail.compareTo(recipientEmail) < 0 ?
+                                    currentUserEmail + "_" + recipientEmail : recipientEmail + "_" + currentUserEmail;
+
+                            DatabaseReference messagesRef = conversationsRef.child(conversationId).child("messages");
+
+                            String message = editTextMessage.getText().toString();
+                            String sender = currentUserEmail;
+                            String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
+                            Map<String, Object> messageData = new HashMap<>();
+                            messageData.put("sender", sender);
+                            messageData.put("recipientName", senderName); // Use senderName instead of getIntent().getStringExtra("name")
+                            messageData.put("message", message);
+                            messageData.put("timestamp", timestamp);
+
+                            messagesRef.push().setValue(messageData)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("ChatApp", "Message sent successfully");
+                                        // Clear the message input field after sending
+                                        editTextMessage.setText("");
+                                    })
+                                    .addOnFailureListener(e -> Log.e("ChatApp", "Error sending message: " + e.getMessage()));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("ChatApp", "Failed to retrieve user details: " + error.getMessage());
+                    }
+                });
     }
 }

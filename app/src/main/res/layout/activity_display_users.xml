@@ -3,10 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatActivity"
+    tools:context=".DisplayUsers"
     android:background="@color/white">
 
-    <!-- Top Layout -->
     <LinearLayout
         android:id="@+id/topLayout"
         android:layout_width="match_parent"
@@ -26,16 +25,9 @@
             android:textStyle="bold"
             android:layout_marginStart="20dp" />
 
-        <ImageButton
-            android:id="@+id/btnDeleteChat"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/delete"
-            android:layout_marginEnd="40dp"
-            android:backgroundTint="@color/lightgreen"/>
 
         <TextView
-            android:id="@+id/Logout"
+            android:id="@+id/TVLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"
@@ -46,45 +38,30 @@
             android:layout_marginEnd="20dp" />
 
     </LinearLayout>
-
-    <!-- RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@id/topLayout"
-        android:layout_above="@+id/chatInputLayout" />
-
-    <!-- Chat Input Layout -->
     <LinearLayout
-        android:id="@+id/chatInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="8dp"
-        android:orientation="horizontal"
+        android:id="@+id/LLTitleholder"
+        android:layout_below="@+id/topLayout"
+        android:layout_margin="10dp"
         >
-
-        <EditText
-            android:id="@+id/chatEditText"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Type a message"
-            android:padding="10dp"
-            android:textColor="@color/black"
+            android:id="@+id/TVcategoryDisplay"
+            android:textStyle="bold"
+            android:textColor="@color/green"
+            android:textAlignment="center"
             />
-        <ImageButton
-            android:id="@+id/send"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/send"
-            android:clickable="true"
-            android:padding="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp" />
-
-
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvContacts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/LLTitleholder"
+        />
+
+
 
 </RelativeLayout>

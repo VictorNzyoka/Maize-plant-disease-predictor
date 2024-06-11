@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity2 extends AppCompatActivity {
 
-    private Button login, admin;
+    private Button login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +18,6 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
 
         login = findViewById(R.id.loginButton);
-        admin = findViewById(R.id.adminButton);
 
         // Set click listener for the login button
         login.setOnClickListener(v -> {
@@ -26,10 +25,5 @@ public class MainActivity2 extends AppCompatActivity {
             startActivity(new Intent(MainActivity2.this, SignIn.class));
         });
 
-        // Set click listener for the admin button
-        admin.setOnClickListener(v -> {
-            // Start the AdminActivity when the admin button is clicked
-            startActivity(new Intent(MainActivity2.this, AdminLogin.class));
-        });
     }
 }

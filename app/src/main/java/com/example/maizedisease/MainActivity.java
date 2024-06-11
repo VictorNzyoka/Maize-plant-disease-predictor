@@ -25,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 2;
     private static final int MAX_IMAGE_SIZE = 1024 * 1024; // 1 MB
 
-    private ImageView imageView, message, backButton, logoutButton;
+    private ImageView imageView;
+    private LinearLayout messageLayout;
     private TextView resultTextView;
     private Button predictButton;
 
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         resultTextView = findViewById(R.id.outputTextView);
         predictButton = findViewById(R.id.predictButton);
-        message = findViewById(R.id.message);
+        messageLayout = findViewById(R.id.messagingLayout);
         //backButton = findViewById(R.id.back_button);
         //logoutButton = findViewById(R.id.logout_button);
         drawerLayout = findViewById(R.id.drawableLayout);
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         captureButton.setOnClickListener(v -> captureImage());
         uploadButton.setOnClickListener(v -> pickImage());
         predictButton.setOnClickListener(v -> predictDisease());
-        message.setOnClickListener(v -> messaging());
+        messageLayout.setOnClickListener(v -> messaging());
 
         // Set action bar color
         if (getSupportActionBar() != null) {
@@ -313,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void messaging() {
-        Intent intent = new Intent(MainActivity.this, MessageActivity.class);
+        Intent intent = new Intent(MainActivity.this, DisplayUsers.class);
         startActivity(intent);
     }
 

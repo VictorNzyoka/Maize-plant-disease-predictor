@@ -27,7 +27,9 @@
             android:layout_height="200dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/image_icon"
+            />
 
         <LinearLayout
             android:id="@+id/buttonLayout"
@@ -47,7 +49,8 @@
                 android:backgroundTint="@color/lightgreen"
                 android:text="Capture Image"
                 android:textAllCaps="false"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:padding="8dp"/>
 
             <Button
                 android:id="@+id/button"
@@ -56,7 +59,8 @@
                 android:background="@drawable/round_btn"
                 android:backgroundTint="@color/lightgreen"
                 android:text="Choose Image"
-                android:textAllCaps="false"/>
+                android:textAllCaps="false"
+                android:padding="8dp"/>
 
         </LinearLayout>
 
@@ -67,6 +71,7 @@
             android:layout_below="@id/buttonLayout"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="16dp"
+            android:padding="8dp"
             android:background="@drawable/round_btn"
             android:backgroundTint="@color/lightgreen"
             android:text="Predict Disease"
@@ -85,14 +90,33 @@
             android:textColor="@color/black"
             android:textSize="18sp" />
 
-        <ImageView
-            android:id="@+id/message"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_background"
+            android:padding="8dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="80dp"
-            app:srcCompat="@drawable/messenger" />
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/messagingLayout">
+
+            <ImageView
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/baseline_chat_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="chat"
+                android:textColor="#000000"
+                android:textSize="30sp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
     </RelativeLayout>
 </androidx.drawerlayout.widget.DrawerLayout>
