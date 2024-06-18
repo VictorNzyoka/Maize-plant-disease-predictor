@@ -22,6 +22,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
+        
         this.listener = listener;
     }
 

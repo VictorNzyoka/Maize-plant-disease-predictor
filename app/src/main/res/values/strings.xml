@@ -12,4 +12,5 @@
     <string name="nav_about_description">
         The Maize Plant Disease Detection App is designed to help farmers and agricultural professionals identify common diseases in maize plants. By simply capturing or uploading an image of a maize leaf, the app uses advanced machine learning algorithms to analyze the image and provide accurate disease detection results. The app supports the identification of diseases such as Blight, Common Rust, and Gray Leaf Spot. With this app, users can quickly diagnose maize plant diseases and take appropriate measures to prevent the spread of the disease and protect their crops.
     </string>
+    <string name="enter_and_sent_your_details_to_the_admin_for_registration">Enter and sent your Details to the Admin for registration</string>
 </resources>

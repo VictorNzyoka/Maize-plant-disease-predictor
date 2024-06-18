@@ -1,11 +1,13 @@
 package com.example.maizedisease;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,10 +22,12 @@ import com.google.firebase.database.ValueEventListener;
 public class SignIn extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
+    private TextView signupButton;
     private Button signInButton;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +42,20 @@ public class SignIn extends AppCompatActivity {
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         signInButton = findViewById(R.id.sign_in);
+        signupButton = findViewById(R.id.signup);
 
         // Set click listener for the sign-in button
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signInUser();
+            }
+        });
+        signupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent4 = new Intent(SignIn.this, UserDetails.class);
+                startActivity(intent4);
             }
         });
     }

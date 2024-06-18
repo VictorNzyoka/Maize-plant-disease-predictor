@@ -131,7 +131,7 @@ public class ChatActivity extends AppCompatActivity {
 
                             Map<String, Object> messageData = new HashMap<>();
                             messageData.put("sender", sender);
-                            messageData.put("recipientName", senderName); // Use senderName instead of getIntent().getStringExtra("name")
+                            messageData.put("recipientName", senderName);
                             messageData.put("message", message);
                             messageData.put("timestamp", timestamp);
 

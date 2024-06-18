@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maizedisease.ml.MaizeDiseaseModel;
 import com.example.maizedisease.ml.MaizeModel;
 import com.google.android.material.navigation.NavigationView;
 
@@ -51,13 +52,13 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView imageView;
     private LinearLayout messageLayout;
-    private TextView resultTextView;
+    private TextView resultTextView,signup;
     private Button predictButton;
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private Bitmap imageBitmap;
-    private MaizeModel model;
+    private MaizeDiseaseModel model;
 
     private ActivityResultLauncher<String> pickImageLauncher;
     private ActivityResultLauncher<Void> captureImageLauncher;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         //backButton = findViewById(R.id.back_button);
         //logoutButton = findViewById(R.id.logout_button);
         drawerLayout = findViewById(R.id.drawableLayout);
+
 
 
         Button captureButton = findViewById(R.id.captureButton);
@@ -179,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
             new Thread(() -> {
                 try {
-                    model = MaizeModel.newInstance(MainActivity.this);
+                    model = MaizeDiseaseModel.newInstance(MainActivity.this);
 
                     // Resize the input image to match the expected input shape
                     Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, 256, 256, true);
@@ -191,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 256, 256, 3}, DataType.FLOAT32);
                     inputFeature0.loadBuffer(byteBuffer);
 
-                    MaizeModel.Outputs outputs = model.process(inputFeature0);
+                    MaizeDiseaseModel.Outputs outputs = model.process(inputFeature0);
                     TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
                     int[] outputArray = outputFeature0.getIntArray();
