@@ -18,5 +18,6 @@
     <color name="lightgreen">#8EEC92</color>
     <color name="slate_gray">#708090</color>
     <color name="darker_gray">#0C0C0C</color>
+    <color name="red">#F80606</color>
 
 </resources>

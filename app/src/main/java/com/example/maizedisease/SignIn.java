@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 public class SignIn extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
-    private TextView signupButton;
+    private TextView signupButton,forgotPasswordButton;
     private Button signInButton;
 
     private FirebaseAuth firebaseAuth;
@@ -43,6 +43,7 @@ public class SignIn extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         signInButton = findViewById(R.id.sign_in);
         signupButton = findViewById(R.id.signup);
+        forgotPasswordButton = findViewById(R.id.forgotPassword);
 
         // Set click listener for the sign-in button
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +57,13 @@ public class SignIn extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent4 = new Intent(SignIn.this, UserDetails.class);
                 startActivity(intent4);
+            }
+        });
+        forgotPasswordButton.setOnClickListener(new View.OnClickListener() { // Added forgot password listener
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignIn.this, ForgotPassword.class);
+                startActivity(intent);
             }
         });
     }

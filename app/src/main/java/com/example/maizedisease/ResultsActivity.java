@@ -4,19 +4,16 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,12 +21,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ResultsActivity extends AppCompatActivity {
+public class ResultsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private RecyclerView fungicideRecyclerView;
     private FungicideAdapter fungicideAdapter;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
+
+    private static final Map<Integer, Class<?>> menuMap = new HashMap<>();
+    static {
+        menuMap.put(R.id.nav_home, MainActivity.class);
+        menuMap.put(R.id.nav_chat, ChatActivity.class);
+        menuMap.put(R.id.nav_profile, ProfileActivity.class);
+        menuMap.put(R.id.nav_logout, MainActivity2.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +59,7 @@ public class ResultsActivity extends AppCompatActivity {
         TextView outputTextView = findViewById(R.id.outputTextView);
         fungicideRecyclerView = findViewById(R.id.fungicideRecyclerView);
 
-        // Get references to the DrawerLayout, NavigationView, and its TextViews
+        // Get references to the DrawerLayout and set up the toggle
         drawerLayout = findViewById(R.id.drawableLayout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -62,12 +69,7 @@ public class ResultsActivity extends AppCompatActivity {
         }
 
         NavigationView navigationView = findViewById(R.id.nav_views);
-        View headerView = navigationView.getHeaderView(0);
-        TextView navProfileTextView = headerView.findViewById(R.id.nav_profile);
-        TextView navLogoutTextView = headerView.findViewById(R.id.nav_logout);
-
-        navProfileTextView.setOnClickListener(v -> navigateToProfile());
-        navLogoutTextView.setOnClickListener(v -> logout());
+        navigationView.setNavigationItemSelectedListener(this);
 
         // Retrieve prediction result and fungicide list from intent
         String predictionResult = getIntent().getStringExtra("ResultActivity");
@@ -98,23 +100,26 @@ public class ResultsActivity extends AppCompatActivity {
         return toggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
-    private void navigateToProfile() {
-        Toast.makeText(this, "Profile selected", Toast.LENGTH_SHORT).show();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Intent intentProfile = new Intent(ResultsActivity.this, ProfileActivity.class);
-            startActivity(intentProfile);
-            finish(); // Optionally finish the current activity
-        }, 250);
-        drawerLayout.closeDrawer(androidx.core.view.GravityCompat.START);
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        Class<?> activityClass = menuMap.get(id);
+        if (activityClass != null) {
+            Intent intent = new Intent(this, activityClass);
+            startActivity(intent);
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 
-    private void logout() {
-        Toast.makeText(this, "Logout selected", Toast.LENGTH_SHORT).show();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Intent intentLogout = new Intent(ResultsActivity.this, SignIn.class);
-            startActivity(intentLogout);
-            finishAffinity(); // Optionally finish all activities in the task stack
-        }, 250);
-        drawerLayout.closeDrawer(androidx.core.view.GravityCompat.START);
+    // Override onBackPressed to close drawer when back button is pressed
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
