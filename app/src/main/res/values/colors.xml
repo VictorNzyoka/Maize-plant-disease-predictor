@@ -19,5 +19,6 @@
     <color name="slate_gray">#708090</color>
     <color name="darker_gray">#0C0C0C</color>
     <color name="red">#F80606</color>
+    <color name="darkgreen">#0D4302</color>
 
 </resources>

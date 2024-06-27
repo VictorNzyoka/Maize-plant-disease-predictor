@@ -17,6 +17,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.maizedisease.ml.MaizeDiseaseModel;
-import com.example.maizedisease.ml.MaizeModel;
 import com.google.android.material.navigation.NavigationView;
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.image.TensorImage;
@@ -37,22 +38,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private static final float CONFIDENCE_THRESHOLD = 0.90f;
+    private static final float CONFIDENCE_THRESHOLD = 0.80f;
     private static final int REQUEST_STORAGE_PERMISSION = 1;
     private static final int REQUEST_CAMERA_PERMISSION = 2;
     private static final int MAX_IMAGE_SIZE = 1024 * 1024; // 1 MB
 
-    private ImageView imageView;
-    private LinearLayout messageLayout;
-    private TextView resultTextView,signup;
+    private ImageView imageView, backButton, logoutButton;
+    private LinearLayout messageLayout, home, info, profile, view;
+    private TextView resultTextView, signup;
     private Button predictButton;
 
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle toggle;
     private Bitmap imageBitmap;
     private MaizeDiseaseModel model;
 
@@ -68,11 +70,12 @@ public class MainActivity extends AppCompatActivity {
         resultTextView = findViewById(R.id.outputTextView);
         predictButton = findViewById(R.id.predictButton);
         messageLayout = findViewById(R.id.messagingLayout);
-        //backButton = findViewById(R.id.back_button);
-        //logoutButton = findViewById(R.id.logout_button);
-        drawerLayout = findViewById(R.id.drawableLayout);
-
-
+        backButton = findViewById(R.id.back_button);
+        logoutButton = findViewById(R.id.logout_button);
+        home = findViewById(R.id.homelayout);
+        view = findViewById(R.id.viewlayout);
+        info = findViewById(R.id.infolayout);
+        profile = findViewById(R.id.profilelayout);
 
         Button captureButton = findViewById(R.id.captureButton);
         Button uploadButton = findViewById(R.id.button);
@@ -82,6 +85,13 @@ public class MainActivity extends AppCompatActivity {
         uploadButton.setOnClickListener(v -> pickImage());
         predictButton.setOnClickListener(v -> predictDisease());
         messageLayout.setOnClickListener(v -> messaging());
+        backButton.setOnClickListener(v -> onBack());
+        logoutButton.setOnClickListener(v -> logout());
+        home.setOnClickListener(v -> Home());
+        // Initially disable the click listener for 'view'
+        view.setOnClickListener(null);
+        profile.setOnClickListener(v -> Profile());
+        info.setOnClickListener(v -> information());
 
         // Set action bar color
         if (getSupportActionBar() != null) {
@@ -94,30 +104,6 @@ public class MainActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.lightgreen));
         }
-
-        drawerLayout = findViewById(R.id.drawableLayout);
-        if (drawerLayout != null) {
-            toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawerLayout.addDrawerListener(toggle);
-            toggle.syncState();
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            } else {
-                Toast.makeText(this, "ActionBar is not available", Toast.LENGTH_SHORT).show();
-            }
-
-            NavigationView navigationView = findViewById(R.id.nav_views);
-            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    return false ;
-                    //handleNavigationItemSelected(item);
-                }
-            });
-        } else {
-            Toast.makeText(this, "DrawerLayout is not available", Toast.LENGTH_SHORT).show();
-        }
-
 
         pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 uri -> {
@@ -152,6 +138,55 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
         }
+
+        // Monitor changes in resultTextView to conditionally enable click listener for 'view'
+        Set<String> validOutputs = new HashSet<>(Arrays.asList("blight", "common rust", "gray leaf spot"));
+        resultTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No action needed before text is changed
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No action needed during text change
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Check if the new text is one of the valid outputs
+                if (validOutputs.contains(s.toString().toLowerCase())) {
+                    // Enable the click listener if the text is valid
+                    view.setOnClickListener(v -> results());
+                } else {
+                    // Disable the click listener if the text is not valid
+                    view.setOnClickListener(null);
+                }
+            }
+        });
+    }
+
+    private void information() {
+        Intent intent4 = new Intent(MainActivity.this, info.class);
+        startActivity(intent4);
+    }
+
+    private void Profile() {
+        Intent intent4 = new Intent(MainActivity.this, ProfileActivity.class);
+        startActivity(intent4);
+    }
+
+    private void Home() {
+        Intent intent4 = new Intent(MainActivity.this, MainActivity.class);
+        startActivity(intent4);
+    }
+
+    private void results() {
+        Intent intent4 = new Intent(MainActivity.this, ResultsActivity.class);
+        startActivity(intent4);
+    }
+
+    private void back() {
     }
 
     private void captureImage() {
@@ -209,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         predictButton.setEnabled(true); // Enable predict button after processing
                         if (finalMaxConfidence >= CONFIDENCE_THRESHOLD) {
-                            resultTextView.setText( outputLabel );
+                            resultTextView.setText(outputLabel);
 
                             // Create an ArrayList of FungicideModel objects based on the predicted disease
                             ArrayList<FungicideModel> fungicideList = new ArrayList<>();
@@ -317,22 +352,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /* private void logout() {
+    private void logout() {
         Intent intent = new Intent(MainActivity.this, SignIn.class);
         startActivity(intent);
     }
 
-   public void onBack() {
+    public void onBack() {
         Intent intent = new Intent(MainActivity.this, SignIn.class);
         startActivity(intent);
-    }*/
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
-
-
 }

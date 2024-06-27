@@ -1,26 +1,28 @@
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawableLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:orientation="vertical"
+    android:background="@drawable/image" >
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_views"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:headerLayout="@layout/main_header"/>
-        app:menu="@menu/nav_menu" />
-
-    <RelativeLayout
-        android:id="@+id/main"
+    <include
+        android:id="@+id/statusBar"
+        layout="@layout/nav_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="20dp">
+        android:layout_height="wrap_content"/>
 
+    <!-- Main content layout -->
+    <RelativeLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="20dp"
+        >
+
+        <!-- Your existing content -->
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="200dp"
@@ -28,9 +30,9 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/image_icon"
-            />
+            android:src="@drawable/image_icon" />
 
+        <!-- Buttons layout -->
         <LinearLayout
             android:id="@+id/buttonLayout"
             android:layout_width="match_parent"
@@ -46,8 +48,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/round_btn"
-                android:backgroundTint="@color/lightgreen"
                 android:text="Capture Image"
+                android:textColor="@color/black"
                 android:textAllCaps="false"
                 android:layout_marginEnd="16dp"
                 android:padding="8dp"/>
@@ -57,13 +59,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/round_btn"
-                android:backgroundTint="@color/lightgreen"
+                android:textColor="@color/black"
                 android:text="Choose Image"
                 android:textAllCaps="false"
                 android:padding="8dp"/>
 
         </LinearLayout>
 
+        <!-- Predict button -->
         <Button
             android:id="@+id/predictButton"
             android:layout_width="wrap_content"
@@ -73,11 +76,11 @@
             android:layout_marginBottom="16dp"
             android:padding="8dp"
             android:background="@drawable/round_btn"
-            android:backgroundTint="@color/lightgreen"
+            android:textColor="@color/black"
             android:text="Predict Disease"
-            android:textAllCaps="false"
-            />
+            android:textAllCaps="false"/>
 
+        <!-- Output text view -->
         <TextView
             android:id="@+id/outputTextView"
             android:layout_width="wrap_content"
@@ -90,17 +93,18 @@
             android:textColor="@color/black"
             android:textSize="18sp" />
 
+        <!-- Messaging layout at bottom -->
         <LinearLayout
+            android:id="@+id/messagingLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:orientation="horizontal"
-            android:background="@drawable/rounded_background"
             android:padding="8dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="80dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/messagingLayout">
+            android:background="@drawable/rounded_background">
 
             <ImageView
                 android:id="@+id/message"
@@ -112,11 +116,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="chat"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textSize="30sp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"/>
         </LinearLayout>
 
     </RelativeLayout>
-</androidx.drawerlayout.widget.DrawerLayout>
+
+    <!-- Include the task bar at the bottom -->
+    <include
+        android:id="@+id/taskBar"
+        layout="@layout/taskbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

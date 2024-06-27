@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,24 +26,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResultsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ResultsActivity extends AppCompatActivity  {
     private RecyclerView fungicideRecyclerView;
     private FungicideAdapter fungicideAdapter;
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle toggle;
-
-    private static final Map<Integer, Class<?>> menuMap = new HashMap<>();
-    static {
-        menuMap.put(R.id.nav_home, MainActivity.class);
-        menuMap.put(R.id.nav_chat, ChatActivity.class);
-        menuMap.put(R.id.nav_profile, ProfileActivity.class);
-        menuMap.put(R.id.nav_logout, MainActivity2.class);
-    }
+    private ImageView backButton,logoutButton;
+    private LinearLayout home,info,profile,chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+
+        home = findViewById(R.id.homelayout);
+        info = findViewById(R.id.infolayout);
+        profile = findViewById(R.id.profilelayout);
+        backButton = findViewById(R.id.back_button);
+        logoutButton = findViewById(R.id.logout_button);
+        chat = findViewById(R.id.chatlayout);
+
+
+        backButton.setOnClickListener(v -> onBack());
+        logoutButton.setOnClickListener(v -> logout());
+        home.setOnClickListener(v -> Home());
+        profile.setOnClickListener(v -> Profile());
+        info.setOnClickListener(v -> information());
+        chat.setOnClickListener(v -> messaging());
+
 
         // Set action bar color
         if (getSupportActionBar() != null) {
@@ -58,18 +68,6 @@ public class ResultsActivity extends AppCompatActivity implements NavigationView
         // Initialize views
         TextView outputTextView = findViewById(R.id.outputTextView);
         fungicideRecyclerView = findViewById(R.id.fungicideRecyclerView);
-
-        // Get references to the DrawerLayout and set up the toggle
-        drawerLayout = findViewById(R.id.drawableLayout);
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        NavigationView navigationView = findViewById(R.id.nav_views);
-        navigationView.setNavigationItemSelectedListener(this);
 
         // Retrieve prediction result and fungicide list from intent
         String predictionResult = getIntent().getStringExtra("ResultActivity");
@@ -89,37 +87,33 @@ public class ResultsActivity extends AppCompatActivity implements NavigationView
         fungicideRecyclerView.setAdapter(fungicideAdapter);
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        toggle.syncState();
+    private void information() {
+        Intent intent4 = new Intent(ResultsActivity.this,info.class);
+        startActivity(intent4);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return toggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    private void Profile() {
+        Intent intent5 = new Intent(ResultsActivity.this,ProfileActivity.class);
+        startActivity(intent5);
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        Class<?> activityClass = menuMap.get(id);
-        if (activityClass != null) {
-            Intent intent = new Intent(this, activityClass);
-            startActivity(intent);
-        }
-
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+    private void Home() {
+        Intent intent6 = new Intent(ResultsActivity.this,MainActivity.class);
+        startActivity(intent6);
     }
 
-    // Override onBackPressed to close drawer when back button is pressed
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    private void messaging() {
+        Intent intent7 = new Intent(ResultsActivity.this, DisplayUsers.class);
+        startActivity(intent7);
+    }
+
+    private void logout() {
+        Intent intent8 = new Intent(ResultsActivity.this, SignIn.class);
+        startActivity(intent8);
+    }
+
+    public void onBack() {
+        Intent intent9 = new Intent(ResultsActivity.this, MainActivity.class);
+        startActivity(intent9);
     }
 }
