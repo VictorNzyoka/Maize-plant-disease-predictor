@@ -25,5 +25,5 @@ To run this project locally, follow these steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/maize-disease-detection.git
+   git clone https://github.com/VictorNzyoka/maize-plant-disease-predictor.git
    cd maize-disease-detection
