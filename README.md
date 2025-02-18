@@ -1,6 +1,5 @@
 # Maize Disease Detection Application
 
-
 ## Overview
 
 This project aims to develop a mobile application for automated maize disease detection using Convolutional Neural Networks (CNNs). The application is designed to help smallholder farmers in Makueni County, Kenya, detect and classify common maize diseases such as Blight, Common Rust, and Gray Leaf Spot. The system provides real-time disease diagnosis, recommends appropriate fungicides, and connects farmers with agricultural extension officers for further consultation.
@@ -16,8 +15,24 @@ This project aims to develop a mobile application for automated maize disease de
 
 - **Machine Learning**: TensorFlow for training the CNN model.
 - **Mobile Development**: Java for Android app development.
-- **Backend**: Flask API for handling image uploads and predictions.
 - **Database**: Firebase for storing user data and disease information.
+
+## Screenshots
+
+### Upload Image Page
+![Upload Image](https://github.com/user-attachments/assets/eb4e1564-2534-4b99-bad3-288905457ab4)
+
+
+### Healthy Maize Leaf Detection
+![Healthy Leaf](https://github.com/user-attachments/assets/e72655ef-57ff-4767-b0b7-063f05aba651)
+
+
+### Gray Leaf Spot Detection
+![Gray Leaf Spot](https://github.com/user-attachments/assets/4e5af2bb-e877-496f-b2af-58bdc3302a2e)
+
+### Gray Leaf Spot Recommentation
+![Gray Leaf Spot](https://github.com/user-attachments/assets/2b2df6d6-ce12-4432-bc73-f81e55f48010)
+
 
 ## Installation
 
