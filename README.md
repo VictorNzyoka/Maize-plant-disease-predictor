@@ -31,7 +31,8 @@ This project aims to develop a mobile application for automated maize disease de
 ![Gray Leaf Spot](https://github.com/user-attachments/assets/4e5af2bb-e877-496f-b2af-58bdc3302a2e)
 
 ### Gray Leaf Spot Recommentation
-![Gray Leaf Spot](https://github.com/user-attachments/assets/2b2df6d6-ce12-4432-bc73-f81e55f48010)
+![Gray Leaf Spot](https://github.com/user-attachments/assets/5fcc4d63-b3d3-4637-a343-04692e63fc4e)
+
 
 
 ## Installation
